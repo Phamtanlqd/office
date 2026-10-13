@@ -258,7 +258,7 @@
     </div>
   </div>
 
-  <!-- KHU VỰC SOẠN THẢO TRANG A4 (Mặc định trang đầu là Dọc) -->
+  <!-- KHU VỰC SOẠN THẢO TRANG A4 -->
   <div class="workspace" id="workspaceContainer">
     <div id="editor" class="page-a4" contenteditable="true">
       <p style="text-align: center; font-weight: bold; margin-bottom: 2px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
@@ -268,7 +268,7 @@
       <p style="text-align: center; font-weight: bold; font-size: 14pt; margin-top: 20px;">BÁO CÁO TỔNG HỢP</p>
       <p style="text-align: center; font-weight: bold; margin-top: -10px; margin-bottom: 20px;">V/v Triển khai tài liệu hỗn hợp trang Dọc và Trang Ngang</p>
       <p>Kính gửi: .........................................................................................................................</p>
-      <p>Bạn có thể soạn thảo văn bản thông thường ở trang dọc này. Khi cần làm bảng biểu lớn nhiều cột, hãy bấm nút <b>"Chèn Trang A4 Ngang Mới"</b> ở thanh công cụ bên trái...</p>
+      <p>Thầy hãy dán API Key vào ô bên trái, nhập yêu cầu và bấm nút để Trợ lý AI hỗ trợ soạn thảo...</p>
     </div>
   </div>
 
@@ -291,7 +291,7 @@
       pages.forEach(p => p.style.fontFamily = font);
     }
 
-    // 2. Chèn mẫu tiêu đề hành chính vào trang đang chọn hoặc trang đầu
+    // 2. Chèn mẫu tiêu đề hành chính
     function insertHeaderTemplate() {
       const selection = window.getSelection();
       let targetPage = document.getElementById('editor');
@@ -310,7 +310,7 @@
       targetPage.innerHTML = templateHTML + targetPage.innerHTML;
     }
 
-    // 3. Chèn Trang A4 Ngang mới vào workspace
+    // 3. Chèn Trang A4 Ngang mới
     function insertLandscapePage() {
       const workspace = document.getElementById('workspaceContainer');
       const newPage = document.createElement('div');
@@ -345,7 +345,7 @@
       alert('Đã dọn dẹp và chuẩn hóa định dạng trang hiện tại thành công!');
     }
 
-    // 5. Chèn bảng tùy chỉnh kèm STT vào trang đang chọn
+    // 5. Chèn bảng tùy chỉnh kèm STT
     function insertCustomTable() {
       const rows = parseInt(document.getElementById('inputRows').value) || 3;
       const cols = parseInt(document.getElementById('inputCols').value) || 4;
@@ -414,7 +414,7 @@
       }
     }
 
-   // 7. GỌI GEMINI AI API (Sử dụng model gemini-pro ổn định tuyệt đối)
+    // 7. GỌI GEMINI AI API (Sử dụng model gemini-1.5-flash chuẩn và thông báo lỗi minh bạch)
     async function callAIAssistant() {
       const apiKey = document.getElementById('apiKeyInput').value.trim();
       const prompt = document.getElementById('aiPromptInput').value.trim();
@@ -437,10 +437,9 @@
       }
 
       let targetText = selection.toString() || targetPage.innerText;
-      alert('Đang kết nối với Trợ lý AI, vui lòng chờ trong giây lát...');
 
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -459,7 +458,8 @@
           alert('Trợ lý AI đã hoàn thành yêu cầu!');
         } else {
           console.error("API Error Data:", data);
-          alert('Không nhận được phản hồi từ AI. Vui lòng kiểm tra lại API Key!');
+          const errorMsg = data.error ? data.error.message : "Lỗi không xác định";
+          alert('Lỗi từ AI: ' + errorMsg);
         }
       } catch (error) {
         console.error(error);
